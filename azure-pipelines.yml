@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - vm_ansible_modules
+
+variables:
+  vmImageName: 'ubuntu-latest'
+  vmImageNameWindows: 'windows-latest'
+  azureSubscription: 'Visual Studio Professional(cf31015f-3cdf-45e4-96dd-706bebcf84a2)'
+
+stages:
+- stage: Deploy
+  displayName: 'Deploy complete infra with Ansible'
+  jobs:  
+  - job: Deploy
+    displayName: 'Deploy complete infra with Ansible'
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+      - task: replacetokens@3
+        inputs:
+          targetFiles: '**/infra-deploy.yml'
+          encoding: 'auto'
+          writeBOM: true
+          actionOnMissing: 'warn'
+          keepToken: false
+          tokenPrefix: '__'
+          tokenSuffix: '__'
+      
+      - task: Ansible@0
+        inputs:
+          ansibleInterface: 'agentMachine'
+          playbookPathOnAgentMachine:  '$(System.DefaultWorkingDirectory)/playbooks/infra-deploy.yml'
+          inventoriesAgentMachine: 'file' 
+          inventoryFileOnAgentMachine: '$(System.DefaultWorkingDirectory)/playbooks/azure_rm.yml'
+          args: '-vv'
