@@ -1,0 +1,5 @@
+plugin: azure_rm
+auth_source: auto
+keyed_groups:
+- prefix: tag
+  key: tags
