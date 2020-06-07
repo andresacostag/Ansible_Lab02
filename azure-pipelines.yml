@@ -13,6 +13,17 @@ stages:
   displayName: 'Deploy complete infra with Ansible'
   jobs:  
   - job: Deploy
+- task: Ansible@0
+  inputs:
+    ansibleInterface: 'remoteMachine'
+    connectionOverSsh: 'ansiblevmSSH'
+    playbookSourceRemoteMachine: 'agentMachine'
+    playbookRootRemoteMachine: '$(System.DefaultWorkingDirectory)'
+    playbookPathLinkedArtifactOnRemoteMachine: 'infra-deploy.yml'
+    inventoriesRemoteMachine: 'file'
+    inventoryFileSourceRemoteMachine: 'agentMachine'
+    inventoryFileLinkedArtifactOnRemoteMachine: 'azure_rm.yml'
+    args: '--private-key ~/.ssh/id_rsa'
     displayName: 'Deploy complete infra with Ansible'
     pool:
       vmImage: $(vmImageName)
